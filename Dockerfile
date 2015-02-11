@@ -1,4 +1,4 @@
-FROM debian:squeeze
+FROM debian:wheezy
 MAINTAINER Jakob Borg <jakob@nym.se>
 
 ENV GOLANG_VERSION 1.4.1
@@ -33,15 +33,6 @@ RUN go get github.com/calmh/gonative \
         && gonative -version $GOLANG_VERSION
 
 # Rebuild the special and missing versions, using patches as appropriate
-
-# RUN mkdir /tmp/patches
-# ADD *.patch /tmp/patches/
-# RUN bash -xec '\
-#	cd /usr/local/go ; \
-#	for patch in /tmp/patches/*.patch ; do \
-#		patch -p0 < "$patch" ; \
-#	done \
-#	'
 
 RUN bash -xec '\
                 cd /usr/local/go/src; \

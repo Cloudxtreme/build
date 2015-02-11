@@ -3,12 +3,21 @@ MAINTAINER Jakob Borg <jakob@nym.se>
 
 ENV GOLANG_VERSION 1.4.1
 
-# SCMs for "go get", gcc for cgo
-RUN apt-get update && apt-get install -y \
-        ca-certificates curl gcc libc6-dev make \
-        bzr git mercurial unzip patch \
-        --no-install-recommends \
-	&& apt-get clean \
+# Install necessary packages
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        bzr \
+        ca-certificates \
+        curl \
+        gcc \
+        git \
+        libc6-dev \
+        make \
+        mercurial \
+        patch \
+        unzip \
+        zip \
+        && apt-get clean \
         && rm -rf /var/lib/apt/lists/*
 
 # Get the binary dist of Go to be able to bootstrap gonative.
@@ -28,7 +37,7 @@ WORKDIR /go
 # Use gonative to install native Go for most arch/OS combos
 
 RUN go get github.com/calmh/gonative \
-	&& cd /usr/local \
+        && cd /usr/local \
         && rm -rf go \
         && gonative -version $GOLANG_VERSION
 
@@ -42,15 +51,15 @@ RUN bash -xec '\
                         CGO_ENABLED=0 \
                         ./make.bash --no-clean 2>&1; \
                 done \
-		&& ./make.bash --no-clean \
+                && ./make.bash --no-clean \
         '
 
 # Install packages needed for test coverage
 
 RUN go get github.com/tools/godep \
-	&& go get golang.org/x/tools/cmd/cover \
-	&& go get github.com/axw/gocov/gocov \
-	&& go get github.com/AlekSi/gocov-xml
+        && go get golang.org/x/tools/cmd/cover \
+        && go get github.com/axw/gocov/gocov \
+        && go get github.com/AlekSi/gocov-xml
 
 # Install tools "go vet" and "golint"
 

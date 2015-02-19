@@ -1,7 +1,7 @@
 FROM debian:wheezy
 MAINTAINER Jakob Borg <jakob@nym.se>
 
-ENV GOLANG_VERSION 1.4.1
+ENV GOLANG_VERSION 1.4.2
 
 # Install necessary packages
 

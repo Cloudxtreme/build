@@ -45,7 +45,10 @@ RUN go get github.com/calmh/gonative \
 
 RUN bash -xec '\
                 cd /usr/local/go/src; \
-                for platform in linux/386 freebsd/amd64 freebsd/386 windows/386 linux/arm openbsd/amd64 openbsd/386 solaris/amd64 dragonfly/amd64; do \
+                for platform in linux/386 freebsd/amd64 freebsd/386 \
+			windows/386 linux/arm openbsd/amd64 openbsd/386 \
+			solaris/amd64 dragonfly/amd64 dragonfly/386 \
+			netbsd/amd64 netbsd/386; do \
                         GOOS=${platform%/*} \
                         GOARCH=${platform##*/} \
                         CGO_ENABLED=0 \

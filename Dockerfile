@@ -1,4 +1,4 @@
-FROM debian:wheezy
+FROM debian:jessie
 MAINTAINER Jakob Borg <jakob@nym.se>
 
 ENV GOLANG_VERSION 1.4.2

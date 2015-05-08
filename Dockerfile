@@ -22,8 +22,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Get the binary dist of Go to be able to bootstrap gonative.
 
-RUN curl -sSL https://golang.org/dl/go${GOLANG_VERSION}.linux-amd64.tar.gz \
-        | tar -v -C /usr/local -xz
+RUN bash -xec '\
+	cd /usr/local \
+	&& git clone https://github.com/cloudflare/go \
+	&& cd go/src \
+	&& ./all.bash \
+	'
 
 ENV PATH /usr/local/go/bin:$PATH
 ENV GOPATH /go
@@ -34,21 +38,14 @@ ENV PATH /go/bin:$PATH
 RUN mkdir /go
 WORKDIR /go
 
-# Use gonative to install native Go for most arch/OS combos
-
-RUN go get github.com/calmh/gonative \
-        && cd /usr/local \
-        && rm -rf go \
-        && gonative -version $GOLANG_VERSION
-
 # Rebuild the special and missing versions, using patches as appropriate
 
 RUN bash -xec '\
                 cd /usr/local/go/src; \
-                for platform in linux/386 freebsd/amd64 freebsd/386 \
-			windows/386 linux/arm openbsd/amd64 openbsd/386 \
+                for platform in linux/386 linux/arm freebsd/amd64 freebsd/386 \
+			windows/amd64 windows/386 openbsd/amd64 openbsd/386 \
 			solaris/amd64 dragonfly/amd64 dragonfly/386 \
-			netbsd/amd64 netbsd/386; do \
+			netbsd/amd64 netbsd/386 darwin/amd64 darwin/386; do \
                         GOOS=${platform%/*} \
                         GOARCH=${platform##*/} \
                         CGO_ENABLED=0 \

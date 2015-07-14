@@ -1,7 +1,7 @@
 FROM debian:jessie
 MAINTAINER Jakob Borg <jakob@nym.se>
 
-ENV GOLANG_VERSION 1.4.2
+ENV GOLANG_VERSION 1.5
 
 # Install necessary packages
 
@@ -22,8 +22,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Get the binary dist of Go to be able to bootstrap gonative.
 
+RUN curl -sSL https://golang.org/dl/go1.4.2.linux-amd64.tar.gz \
+        | tar -C /usr/local -xz \
+	&& mv /usr/local/go /usr/local/go1.4
+
+ENV GOROOT_BOOTSTRAP /usr/local/go1.4
+ENV GOROOT /usr/local/go
+
 RUN curl -sSL https://golang.org/dl/go${GOLANG_VERSION}.linux-amd64.tar.gz \
-        | tar -v -C /usr/local -xz
+        | tar -C /usr/local -xz
 
 ENV PATH /usr/local/go/bin:$PATH
 ENV GOPATH /go
@@ -45,9 +52,9 @@ RUN go get github.com/calmh/gonative \
 
 RUN bash -xec '\
                 cd /usr/local/go/src; \
-                for platform in linux/386 freebsd/amd64 freebsd/386 \
+                for platform in linux/386 freebsd/386 \
 			windows/386 linux/arm openbsd/amd64 openbsd/386 \
-			solaris/amd64 dragonfly/amd64 dragonfly/386 \
+			solaris/amd64 dragonfly/amd64 \
 			netbsd/amd64 netbsd/386; do \
                         GOOS=${platform%/*} \
                         GOARCH=${platform##*/} \
@@ -56,6 +63,10 @@ RUN bash -xec '\
                 done \
                 && ./make.bash --no-clean \
         '
+
+# Remove the old Go
+
+RUN rm -rf /usr/local/go1.4
 
 # Install packages needed for test coverage
 

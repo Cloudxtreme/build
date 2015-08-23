@@ -3,7 +3,7 @@ MAINTAINER Jakob Borg <jakob@nym.se>
 
 ENV GOLANG_VERSION 1.5
 
-# Install necessary packages
+# Install necessary packages.
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         bzr \
